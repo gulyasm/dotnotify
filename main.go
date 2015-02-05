@@ -6,6 +6,10 @@ import (
 	"log"
 )
 
+func upload(fn string) {
+	log.Printf("Uploading file %s")
+}
+
 func handle(w *fsnotify.Watcher) {
 	for {
 		select {
