@@ -4,19 +4,35 @@ import (
 	"fmt"
 	"github.com/howeyc/fsnotify"
 	"log"
+	"strings"
 )
 
 func upload(fn string) {
-	log.Printf("Uploading file %s")
+	log.Printf("Uploading file %s", fn)
+}
+
+func GetFileName(fn string) string {
+	return fn[strings.LastIndex(fn, "/")+1:]
 }
 
 func handle(w *fsnotify.Watcher) {
+	files := map[string]bool{
+		".bashrc":       true,
+		".bash_profile": true,
+		".vimrc":        true,
+		".tmux.conf":    true,
+		".gitconfig":    true,
+	}
+
 	for {
 		select {
 		case ev := <-w.Event:
 			if ev.IsModify() && !ev.IsAttrib() {
-				log.Println(fmt.Sprintf("Changed: %s", ev.Name))
-				upload(ev.Name)
+				name := GetFileName(ev.Name)
+				log.Println(fmt.Sprintf("Changed: %s", name))
+				if files[name] {
+					upload(name)
+				}
 			}
 		case err := <-w.Error:
 			log.Println(err)
