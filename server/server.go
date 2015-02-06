@@ -46,6 +46,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	//parse the multipart form in the request
 	err := r.ParseMultipartForm(100000)
 	if err != nil {
+		log.Println("Error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -55,11 +56,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	//get the *fileheaders
 	files := m.File["myfiles"]
+	log.Printf("Number of files: %d", len(files))
 	for i, f := range files {
+		log.Printf("File: %s", f)
 		//for each fileheader, get a handle to the actual file
 		file, err := f.Open()
 		defer file.Close()
 		if err != nil {
+			log.Println("Error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -67,11 +71,13 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		dst, err := os.Create(path + files[i].Filename)
 		defer dst.Close()
 		if err != nil {
+			log.Println("Error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		//copy the uploaded file to the destination file
 		if _, err := io.Copy(dst, file); err != nil {
+			log.Println("Error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
