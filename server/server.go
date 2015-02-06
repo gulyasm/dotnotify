@@ -58,7 +58,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	files := m.File["myfiles"]
 	log.Printf("Number of files: %d", len(files))
 	for i, f := range files {
-		log.Printf("File: %s", f)
 		//for each fileheader, get a handle to the actual file
 		file, err := f.Open()
 		defer file.Close()
